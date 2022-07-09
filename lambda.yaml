@@ -1,0 +1,129 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  This CloudFormation template creates simple Lambda functions,
+  which prints CloudFormation resource Arn from the stack.  
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Description: Role for the execution of Lambda function
+      ManagedPolicyArns: 
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      RoleName: !Join ['-', [!Ref 'AWS::StackName', Role, !Ref 'AWS::Region']]
+      Policies:
+      - PolicyName: LambdaFunctionPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Timeout: 5
+      Handler: index.handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
+      Layers:
+        - arn:aws:lambda:us-east-2:205631354229:layer:PythonRequestsLayer:1
+      Code:
+        ZipFile:
+          !Sub
+            - |-
+              #!/usr/bin/env python3
+
+              import json
+              import logging
+              import os
+              import requests
+
+
+              def lambda_handler(event, context):
+                  # Read message posted on SNS Topic
+                  message = event
+                  
+                  # sns = event['Records'][0]['Sns']
+                  # ta = sns['TopicArn']
+                  # sub = sns['Subject']
+                  # ts =  sns['Timestamp']
+                  # message = json.loads(sns['Message'])
+                  title_text = "AWS EventBridge Alarm."
+                  # alarm_description = "Region : " + message["region"] + "\nUser : " + message["detail"]["userIdentity"]["userName"] + "\nEvent-Type : "+ message["detail"]["eventName"] + "\nInstance ID : " + message["detail"]["requestParameters"]["target"]
+                  alarm_description = "This alarm is regarding EvntBrg"
+                  payload = {
+                      "channel": "aakashtestchannel",
+                      "text": title_text,
+                      "blocks": [
+                        {
+                          "type": "section",
+                          "text": {
+                            "type": "mrkdwn",
+                            "text": f"*Reason*:\n ```{alarm_description}```"
+                          }
+                        }
+                      ]
+                    
+                  }
+                  
+                  # webhook_url = os.environ.get("WEBHOOK_URL")
+                  webhook_url = "https://hooks.slack.com/services/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"
+                  response = requests.post(webhook_url, json=payload, headers={'Content-Type': 'application/json'})
+                  print(response.text)              
+            -
+              lambda_function_role_arn: !Ref LambdaFunctionRole
+
+  EventBridgeWAF:
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: Rule for Alert on any changes on WAF on console.
+      EventPattern:
+        source:
+          - aws.wafv2
+        detail:
+          eventSource:
+            - wafv2.amazonaws.com
+          eventName:
+            - UpdateWebACL
+      Name: EventBridgeWAF
+      Targets: 
+        - Arn: !GetAtt LambdaFunction.Arn
+          Id: EventBridgeWAFLambdaFunction
+  
+  LambdaInvokePermission: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn:  !GetAtt EventBridgeWAF.Arn
+      FunctionName: !Ref LambdaFunction
