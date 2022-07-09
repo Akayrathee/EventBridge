@@ -98,9 +98,8 @@ pipeline {
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
 
-                            for(1) {
-                                updateCloudFormationStacksParallel("WAF-eventbridge", 'us-east-2')
-                            }
+                            updateCloudFormationStacksParallel("WAF-eventbridge", 'us-east-2')
+                            
 
                             echo "Updating stacks in parallel..."
                             echo "${cfnUpdateTasks}"
