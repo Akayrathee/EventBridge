@@ -97,7 +97,7 @@ Resources:
                   }
                   
                   # webhook_url = os.environ.get("WEBHOOK_URL")
-                  webhook_url = "https://hooks.slack.com/services/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"
+                  webhook_url = "https://hooks.slack.com/services/"
                   response = requests.post(webhook_url, json=payload, headers={'Content-Type': 'application/json'})
                   print(response.text)              
             -
