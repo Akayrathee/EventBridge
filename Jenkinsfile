@@ -101,9 +101,10 @@ pipeline {
                             // def REGIONS = ["us-east-1", "us-east-2"]
 
                             for(data in datas.EventBridgeConfig){
+                                echo ""
                                 echo "Updating EventBridge in -${data.region} ..."
                                 
-                                updateCloudFormationStacksParallel("WAF-eventbridge", data.region)
+                                updateCloudFormationStacksParallel("WAF-eventbridge-${data.region}", data.region)
                             }
                             echo "Updating stacks in parallel..."
                             echo "${cfnUpdateTasks}"
