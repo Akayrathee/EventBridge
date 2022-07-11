@@ -105,7 +105,7 @@ pipeline {
                                 echo ""
                                 echo "Updating EventBridge in -${data.region} ..."
                                 def cfnParams = new JsonSlurperClassic().parseText("{}")
-                                cfnParams["LambdaFunctionLayerArn"] = data.lambdaFunctionLayerARN
+                                cfnParams["LambdaFunctionLayerArn"] = data.LambdaFunctionLayerARN
 
                                 echo "Cloudformation params: ${cfnParams}"
                                 
