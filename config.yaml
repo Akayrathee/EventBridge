@@ -1,5 +1,5 @@
 EventBridgeConfig:
   - region: "us-east-1"
     LambdaFunctionLayer: "arn:aws:lambda:us-east-1:205631354229:layer:PythonRequests:1"
-  # - region: "us-east-2"
-  #   LambdaFunctionLayer : 'arn:aws:lambda:us-east-2:205631354229:layer:PythonRequestsLayer:1'
+  - region: "us-east-2"
+    LambdaFunctionLayer : 'arn:aws:lambda:us-east-2:205631354229:layer:PythonRequestsLayer:1'
