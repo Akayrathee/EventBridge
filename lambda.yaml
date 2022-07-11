@@ -17,7 +17,6 @@ Metadata:
 Parameters:
   LambdaFunctionLayerARN:
     Type: String
-    Default: None
     Description: Provide Arn of the layer need to attach to Lambda Function
 
 
