@@ -97,7 +97,7 @@ pipeline {
                         dir(buildRootDir) {                
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
-                            def datas = readYaml file: 'AakashCode/config.yaml'
+                            def datas = readYaml file: '../config.yaml'
                             // def REGIONS = ["us-east-1", "us-east-2"]
 
                             for(data in datas.EventBridgeConfig){
