@@ -76,8 +76,8 @@ Resources:
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
       Environment:
         Variables:
-          WEBHOOK_URL: webhook
-          CHANNEL: aws-wafchange-notifications
+          WEBHOOK_URL: "https://hooks.slack.com/services/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"
+          CHANNEL: "#aakashtestchannel"
       Layers: 
         - !Ref LambdaFunctionLayerARN
       Code:
@@ -103,7 +103,7 @@ Resources:
                   title_text = "AWS EventBridge Alarm."
                   alarm_description = "User : " + str(username) + "\n Event : " + str(event_type) + "\n Region : " + str(region) + "\n User-Agent : " + str(user_agent) + "\n Web-ACL" + str(webacl)
                   payload = {
-                      "channel": "aakashtestchannel",
+                      "channel": os.environ.get("CHANNEL"),
                       "text": title_text,
                       "blocks": [
                         {
