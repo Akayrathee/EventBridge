@@ -97,10 +97,11 @@ pipeline {
                         dir(buildRootDir) {                
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
+                            REGIONS = ['us-east-1', 'us-east-2']
 
-                            updateCloudFormationStacksParallel("WAF-eventbridge", 'us-east-2')
-                            
-
+                            for(region in REGIONS){
+                                updateCloudFormationStacksParallel("WAF-eventbridge", region)
+                            }
                             echo "Updating stacks in parallel..."
                             echo "${cfnUpdateTasks}"
                             parallel cfnUpdateTasks
