@@ -39,7 +39,7 @@ def downloadFileFromGit(gitUrl, branchName, filePath) {
 }
 
 
-def updateCloudFormationStacksParallel(stackName, stackRegion) {
+def updateCloudFormationStacksParallel(stackName, stackRegion, cfnParams) {
     cfnUpdateTasks["${stackName}"] = {
         node {
   
@@ -63,6 +63,7 @@ def updateCloudFormationStacksParallel(stackName, stackRegion) {
                             def outputs = cfnUpdate(
                                 stack:"${stackName}",
                                 file:"AakashCode/lambda.yaml",
+                                params:cfnParams,
                                 timeoutInMinutes:180,
                                 pollInterval:10000
                             )
@@ -108,7 +109,7 @@ pipeline {
 
                                 echo "Cloudformation params: ${cfnParams}"
                                 
-                                updateCloudFormationStacksParallel("WAF-eventbridge-${data.region}", data.region)
+                                updateCloudFormationStacksParallel("WAF-eventbridge-${data.region}", data.region, cfnParams)
                             }
                             echo "Updating stacks in parallel..."
                             echo "${cfnUpdateTasks}"
