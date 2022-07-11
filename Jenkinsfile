@@ -103,6 +103,10 @@ pipeline {
                             for(data in datas.EventBridgeConfig){
                                 echo ""
                                 echo "Updating EventBridge in -${data.region} ..."
+                                def cfnParams = new JsonSlurperClassic().parseText("{}")
+                                cfnParams["LambdaFunctionLayerArn"] = data.lambdaFunctionLayerARN
+
+                                echo "Cloudformation params: ${cfnParams}"
                                 
                                 updateCloudFormationStacksParallel("WAF-eventbridge-${data.region}", data.region)
                             }

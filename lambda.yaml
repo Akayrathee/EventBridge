@@ -3,6 +3,24 @@ Description: >
   This CloudFormation template creates simple Lambda functions,
   which prints CloudFormation resource Arn from the stack.  
 
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Advanced Settings
+        Parameters:
+          - lambdaFunctionLayerARN
+    ParameterLabels:
+      lambdaFunctionLayerARN:
+        default : Lambda Layer Arn
+
+Parameters:
+  lambdaFunctionLayerARN:
+    Type: String
+    Default: 'None'
+    Description: Provide Arn of the layer need to attach to Lambda Function
+
+
 Resources:
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -55,8 +73,8 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaFunctionRole.Arn
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
-      # Layers:
-      #   - arn:aws:lambda:us-east-2:205631354229:layer:PythonRequestsLayer:1
+      Layers:
+        - !Ref lambdaFunctionLayerARN 
       Code:
         ZipFile:
           !Sub
