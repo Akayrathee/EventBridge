@@ -97,10 +97,13 @@ pipeline {
                         dir(buildRootDir) {                
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
-                            def REGIONS = ["us-east-1", "us-east-2"]
+                            def datas = readYaml file: 'config.yaml'
+                            // def REGIONS = ["us-east-1", "us-east-2"]
 
-                            for(region in REGIONS){
-                                updateCloudFormationStacksParallel("WAF-eventbridge", region)
+                            for(data in datas.EventBridgeConfig){
+                                echo "Updating EventBridge in -${data.region} ..."
+                                
+                                updateCloudFormationStacksParallel("WAF-eventbridge", data.region)
                             }
                             echo "Updating stacks in parallel..."
                             echo "${cfnUpdateTasks}"
