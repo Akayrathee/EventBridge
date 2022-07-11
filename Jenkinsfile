@@ -7,7 +7,7 @@ import net.sf.json.JSONObject
 @Field def shoonyaPipelineUser = "aakashawscredntials"
 @Field def cfnUpdateTasks = [:]
 @Field def allCfnUpdateSuccessful = true
-@Field def slackMessageChannel = "#cloud"
+@Field def slackMessageChannel = "#cloudfgh"
 
 // waf params
 @Field def wafEndpointType = "ALB"
@@ -97,7 +97,7 @@ pipeline {
                         dir(buildRootDir) {                
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
-                            def datas = readYaml file: 'config.yaml'
+                            def datas = readYaml file: 'AakashCode/config.yaml'
                             // def REGIONS = ["us-east-1", "us-east-2"]
 
                             for(data in datas.EventBridgeConfig){
