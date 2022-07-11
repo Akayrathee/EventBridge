@@ -74,6 +74,10 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaFunctionRole.Arn
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
+      Environment:
+        Variables:
+          WEBHOOK_URL: webhook
+          CHANNEL: aws-wafchange-notifications
       Layers: 
         - !Ref LambdaFunctionLayerARN
       Code:
@@ -89,17 +93,15 @@ Resources:
 
 
               def lambda_handler(event, context):
-                  # Read message posted on SNS Topic
-                  message = event
-                  
-                  # sns = event['Records'][0]['Sns']
-                  # ta = sns['TopicArn']
-                  # sub = sns['Subject']
-                  # ts =  sns['Timestamp']
-                  # message = json.loads(sns['Message'])
+                  detail = event["detail"]
+                  username = detail["userIdentity"]["arn"]
+                  event_type = detail["eventName"]
+                  region = detail["awsRegion"]
+                  user_agent = detail["userAgent"]
+                  webacl = detail["requestParameter"]["name"]
+                
                   title_text = "AWS EventBridge Alarm."
-                  # alarm_description = "Region : " + message["region"] + "\nUser : " + message["detail"]["userIdentity"]["userName"] + "\nEvent-Type : "+ message["detail"]["eventName"] + "\nInstance ID : " + message["detail"]["requestParameters"]["target"]
-                  alarm_description = "This alarm is regarding EvntBrg"
+                  alarm_description = "User : " + str(username) + "\n Event : " + str(event_type) + "\n Region : " + str(region) + "\n User-Agent : " + str(user_agent) + "\n Web-ACL" + str(webacl)
                   payload = {
                       "channel": "aakashtestchannel",
                       "text": title_text,
@@ -115,8 +117,7 @@ Resources:
                     
                   }
                   
-                  # webhook_url = os.environ.get("WEBHOOK_URL")
-                  webhook_url = "https://hooks.slack.com/services/"
+                  webhook_url = os.environ.get("WEBHOOK_URL")
                   response = requests.post(webhook_url, json=payload, headers={'Content-Type': 'application/json'})
                   print(response.text)              
             -
