@@ -73,8 +73,7 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaFunctionRole.Arn
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
-      Layers:
-        - !Ref lambdaFunctionLayerARN 
+      Layers: !Ref lambdaFunctionLayerARN 
       Code:
         ZipFile:
           !Sub
