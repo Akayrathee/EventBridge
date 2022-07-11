@@ -9,13 +9,13 @@ Metadata:
       - Label:
           default: Advanced Settings
         Parameters:
-          - lambdaFunctionLayerARN
+          - LambdaFunctionLayerARN
     ParameterLabels:
-      lambdaFunctionLayerARN:
+      LambdaFunctionLayerARN:
         default : Lambda Layer Arn
 
 Parameters:
-  lambdaFunctionLayerARN:
+  LambdaFunctionLayerARN:
     Type: String
     Default: 'None'
     Description: Provide Arn of the layer need to attach to Lambda Function
@@ -73,7 +73,8 @@ Resources:
       Handler: index.handler
       Role: !GetAtt LambdaFunctionRole.Arn
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
-      Layers: !Ref lambdaFunctionLayerARN 
+      Layers: 
+        - !Ref LambdaFunctionLayerARN 
       Code:
         ZipFile:
           !Sub
