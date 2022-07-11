@@ -97,7 +97,7 @@ pipeline {
                         dir(buildRootDir) {                
                             cfnUpdateTasks = [:]
                             allCfnUpdateSuccessful = true
-                            def REGIONS = ['us-east-1', 'us-east-2']
+                            def REGIONS = ["us-east-1", "us-east-2"]
 
                             for(region in REGIONS){
                                 updateCloudFormationStacksParallel("WAF-eventbridge", region)
