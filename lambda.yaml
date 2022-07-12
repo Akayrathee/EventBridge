@@ -76,7 +76,7 @@ Resources:
       FunctionName: !Join ['-', [!Ref 'AWS::StackName', Lambdafunction, !Ref 'AWS::Region']]  # Added Function name
       Environment:
         Variables:
-          WEBHOOK_URL: "https://hooks.slack.com/services/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"
+          WEBHOOK_URL: "https://hooks.slack.com/"
           CHANNEL: "#aakashtestchannel"
       Layers: 
         - !Ref LambdaFunctionLayerARN

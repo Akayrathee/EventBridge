@@ -8,6 +8,7 @@ import net.sf.json.JSONObject
 @Field def cfnUpdateTasks = [:]
 @Field def allCfnUpdateSuccessful = true
 @Field def slackMessageChannel = "#cloudfgh"
+@Field def g_tesseractChange = false
 
 // waf params
 @Field def wafEndpointType = "ALB"
@@ -35,6 +36,7 @@ def downloadFileFromGit(gitUrl, branchName, filePath) {
         // sh "git archive --remote=${gitUrl} --format=tar ${branchName} ${filePath} | tar xf -"
         sh "svn export https://github.com/Akayrathee/EventBridge/trunk AakashCode --force"
         sh "ls"
+        sh "pwd"
     }
 }
 
@@ -91,6 +93,24 @@ pipeline {
     agent any 
 
     stages {
+
+        stage('Check for Code Change'){
+            steps{
+             timestamps
+                {
+                script
+                    {
+                    def lineCountFileChanges = sh ( script: "git diff HEAD^ HEAD | wc -l",returnStdout: true).trim() as Integer
+                    println("Total number of line changes : ${lineCountFileChanges}")
+                    if (lineCountFileChanges > 0 ){
+                        g_tesseractChange = true
+                    }
+
+                    }
+                }
+            }
+        }
+
         stage("EB configuration check") {
             steps {
                 timestamps {
